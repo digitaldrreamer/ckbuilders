@@ -52,7 +52,7 @@ CKB uses PoW even though many newer chains use PoS. The goal is a maximally secu
 The design splits into two layers:
 
 - **Layer 1 (CKB):** Security, settlement, and state storage. Conservative by design; application logic is kept off the base layer.
-- **Layer 2:** Speed, scalability, and application execution. Can be EVM rollups, payment channels, or custom chains; CKB-VM can verify the proofs they produce.
+- **Layer 2:** Speed, scalability, and application execution. It can include EVM rollups, payment channels, or custom chains; CKB-VM can verify the proofs they produce.
 
 The idea is a base layer that is flexible and neutral enough that many kinds of systems can be built on top without changing the base layer.
 
