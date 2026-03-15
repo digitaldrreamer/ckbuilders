@@ -8,7 +8,7 @@ Blockchains generally choose between two ledger models:
    There is no "account" in the traditional sense. The ledger is a set of unspent outputs. Spending means consuming one or more of these and creating new ones—like paying with cash and receiving change.
 
 2. **Ethereum model (account-based)**  
-   More intuitive for most people: you have an account with a balance; transactions update that balance. In this model, token balances usually live inside a smart contract, not as something you "own" directly. If that contract is exploited, your tokens can be taken because ownership is defined by the contract.
+   More intuitive for most people: you have an account with a balance; transactions update that balance. Native ETH balances are held directly by accounts, while many token balances (e.g., ERC-20) are tracked in smart contracts. If a token contract is exploited, balances tracked by that contract can be at risk.
 
 ---
 
