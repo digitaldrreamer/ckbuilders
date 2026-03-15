@@ -110,7 +110,7 @@ A progressive study plan for the CKB Builders' track. Workload starts light on t
 - Script Course Classes 7–10 (Duktape, Performant WASM, Cycle Reductions, Language Choices)
 - Read the sUDT standard document
 - Work through the sUDT CLI tutorial
-- Finish and polish your beginner app — screenshot proof + dev log writeup
+- Finish and polish your beginner app — screenshot proof + dev log write-up
 
 **Log by end of week:** Script course complete; beginner app published + documented
 
