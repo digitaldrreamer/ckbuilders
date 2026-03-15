@@ -14,7 +14,7 @@ Bitcoin's UTXO only stores a number, a value. CKB replaces the UTXO with somethi
 - `lock script`: who can spend this Cell (ownership)
 - `type script`: rules for how this Cell can be used (behaviour)
 
-The lock and type are both executable programs that can be executed on chain.
+The lock and type are both executable programs that can be executed on-chain.
 
 So the Cell is basically a UTXO model that grew up. Just like UTXO, you consume it wholly and create new ones as outputs and the consumed one becomes a Dead Cell, gone forever. But now it can hold any data and enforce any logic, not just a coin value.
 
