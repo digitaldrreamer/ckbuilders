@@ -2,7 +2,7 @@ So I learnt first that there are two major models that blockchains choose betwee
 
 One is the bitcoin model, aka UTXO model. An "account" doesn't exist in the traditional sense. Instead, there's a bag of unspent coins, which is the ledger. Spending means you consume one or more coins and create new ones. Just like cash where you give someone 1000 and get change of 500.
 
-Then there's the Ethereum approach, aka account model. It makes more sense to the average person since its more relatable. You have an account with a balance. Transactions affect that balance. The balance is what amount the trasactions, in or out, resolve to. The token balance lives inside a smart contract, not owned directly by you. SO it means, since ownership is to the contract, if it gets exploited or compromised, your tokens can be stolen.
+Then there's the Ethereum approach, aka account model. It makes more sense to the average person since its more relatable. You have an account with a balance. Transactions affect that balance. The balance is what amount the transactions, in or out, resolve to. The token balance lives inside a smart contract, not owned directly by you. SO it means, since ownership is to the contract, if it gets exploited or compromised, your tokens can be stolen.
 
 Now, CKB takes Bitcoin's model, and generalizes it. How?
 
