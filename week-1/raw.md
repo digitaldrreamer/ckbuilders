@@ -18,7 +18,7 @@ The lock and type are both executable programs that can be executed on-chain.
 
 So the Cell is basically a UTXO model that grew up. Just like UTXO, you consume it wholly and create new ones as outputs and the consumed one becomes a Dead Cell, gone forever. But now it can hold any data and enforce any logic, not just a coin value.
 
-Now, the main value here compared to UTXO is that your token balance lives in a Cell you own, not in a random contract someone else deployed. The contract defines the rules, yes, but the custody/ownership is yours. If the token contract gets exploited, an attacker can't reach into your Cell. They'd need to also know your private key first.
+Now, the main value here compared to UTXO is that your token balance lives in a Cell secured by your lock script, not in a shared contract balance model. The contract/type logic still defines rules, but spending still must satisfy the Cell's lock conditions. Even if token logic has flaws, an attacker typically cannot move assets from your Cell unless they can also satisfy your lock script.
 
 https://docs.nervos.org/docs/getting-started/how-ckb-works#scripts
 
