@@ -1,0 +1,11 @@
+# * Root ignore rules for repo-level local artifacts
+
+# * Local setup/download scripts
+week-2/llvm.sh
+
+# * CKB devnet deployment artifacts (machine/local-network specific)
+week-2/my-first-ckb-project/deployment/devnet/
+
+# * Local environment files
+**/.env
+**/.env.local
