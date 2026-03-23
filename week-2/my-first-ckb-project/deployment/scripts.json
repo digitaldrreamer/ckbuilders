@@ -1,0 +1,21 @@
+{
+  "devnet": {
+    "hello-world.bc": {
+      "codeHash": "0x68e6c55c513149a84bfb1d733cefda13cc8189a8cca2744e7487a6ce4167c0b2",
+      "hashType": "data2",
+      "cellDeps": [
+        {
+          "cellDep": {
+            "outPoint": {
+              "txHash": "0x6552770d1d5cd26b99c85f8a00e74a38784788e241bcf5685a332c31a236151a",
+              "index": 0
+            },
+            "depType": "code"
+          }
+        }
+      ]
+    }
+  },
+  "testnet": {},
+  "mainnet": {}
+}
