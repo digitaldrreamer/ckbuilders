@@ -9,3 +9,42 @@ week-2/my-first-ckb-project/deployment/devnet/
 # * Local environment files
 **/.env
 **/.env.local
+
+# * JS/TS dependencies
+**/node_modules/
+**/.pnpm-store/
+
+# * Build outputs / caches
+**/dist/
+**/build/
+**/.parcel-cache/
+
+# * TypeScript
+**/*.tsbuildinfo
+
+# * Coverage
+**/coverage/
+**/coverage.*
+
+# * Logs
+logs/
+**/*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# * OS
+**/.DS_Store
+**/Thumbs.db
+
+# * IDE
+**/.vscode/
+**/.idea/
+**/*.swp
+**/*.swo
+
+# * Temporary files
+**/*.tmp
+**/*.temp
