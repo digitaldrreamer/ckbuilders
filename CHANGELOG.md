@@ -8,3 +8,11 @@
 - Embedded the remaining unreferenced `week-3/screenshots/` PNGs in `week-3/raw.md`.
 - Added `week-3/ai-cleaned.md` cleaned writeup for easier reading.
 - Updated root `.gitignore` to ignore generated artifacts (e.g. `node_modules`, build caches, logs).
+
+## 2026-04-14
+- Renamed four `week-5/screenshots/` captures from generic screenshot filenames to firewall README–oriented names.
+- Updated `week-5/raw.md` to embed all four firewall repo images and note Control Hub has no screenshots this week.
+
+- Added `two_tier_experiment.py` and ran the two-tier falsification script; Real-CATS raw TSV URLs returned HTTP 404, so `output/two_tier_test_results.csv` records load failure only.
+
+- Fixed Real-CATS raw URL base in `two_tier_experiment.py` from branch `main` to `master` per upstream repo; re-ran experiment (outputs under `output/`).
