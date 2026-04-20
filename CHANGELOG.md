@@ -16,3 +16,27 @@
 - Added `two_tier_experiment.py` and ran the two-tier falsification script; Real-CATS raw TSV URLs returned HTTP 404, so `output/two_tier_test_results.csv` records load failure only.
 
 - Fixed Real-CATS raw URL base in `two_tier_experiment.py` from branch `main` to `master` per upstream repo; re-ran experiment (outputs under `output/`).
+
+## 2026-04-21
+
+- Rewrote `week-6/raw.md` devlog to match prior weeks style (narrative, commands, PR workflow, Refs).
+
+## 2026-04-21 (edit)
+
+- Tuned `week-6/raw.md`: drop PR-bot/tooling focus; frame as all-in spec freeze toward known build.
+
+## 2026-04-20
+
+- week-6 devlog: frame week as falsification and next week as all-in build on confirmed plans after spec stress-test.
+
+## 2026-04-20
+
+- week-6 devlog: humanize prose (drop mechanical bold/em dash pile-up, slogan closers; fix SO typo; keep falsification + spec-first story).
+
+## 2026-04-20
+
+- week-6 devlog: strip is/not/so contrast tics from closing section and tighten governance + falsification openers.
+
+## 2026-04-21 (ai-cleaned)
+
+- Added `week-6/ai-cleaned.md` as a structured, polished companion to `week-6/raw.md` (same substance: falsification, registry rule, doc map, refs).
