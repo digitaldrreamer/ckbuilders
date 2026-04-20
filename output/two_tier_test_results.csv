@@ -1,0 +1,4 @@
+model,precision,recall,f1,positive_rate,roc_auc_risk_model,hard_block_rate_two_tier,soft_flag_rate_two_tier
+blacklist_only,0.0,0.0,0.0,0.0,0.5,0.0,1.0
+risk_only,0.4397295406854745,1.0,0.6108502024291498,1.0,0.5,0.0,1.0
+two_tier_detect,0.4397295406854745,1.0,0.6108502024291498,1.0,0.5,0.0,1.0

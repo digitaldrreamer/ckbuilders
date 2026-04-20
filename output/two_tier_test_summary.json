@@ -1,0 +1,8 @@
+{
+  "rows": 28591,
+  "feature_count": 49,
+  "class_balance_malicious": 0.4397187926270505,
+  "roc_auc_risk_model": 0.5,
+  "hard_block_rate_two_tier": 0.0,
+  "soft_flag_rate_two_tier": 1.0
+}
