@@ -40,3 +40,17 @@
 ## 2026-04-21 (ai-cleaned)
 
 - Added `week-6/ai-cleaned.md` as a structured, polished companion to `week-6/raw.md` (same substance: falsification, registry rule, doc map, refs).
+
+## 2026-04-26
+
+- Added `week-7/raw.md` (implementation-first devlog for Firewall contract build/test/CI/profiling week).
+- Added `week-7/ai-cleaned.md` polished companion writeup with outcomes, commands, and next-week plan.
+
+## 2026-04-26
+- Rewrote `week-7/ai-cleaned.md` to match prior weeks style, with polished narrative sections, structured outcomes, cycle-profile summary, and standardized references.
+
+## 2026-04-26
+- Clarified week-7 accuracy notes in `week-7/raw.md` and `week-7/ai-cleaned.md`: integration count now distinguishes 10 core behavior tests vs 15 total including cycle probes; cycle figures marked as run-derived unless persisted in `contracts/firewall-lock/CYCLE_REPORT.md`.
+
+## 2026-04-26
+- Reworded week-7 consistency clarifications in `week-7/raw.md` and `week-7/ai-cleaned.md` to remove note-style phrasing and use direct GitHub file links for `firewall_lock_tests.rs` and `CYCLE_REPORT.md`.
