@@ -71,8 +71,9 @@ What moves to next week:
 - beginner app polish expected by the curriculum sequence.
 
 
-Refs/Sources
-CKB Transaction Firewall repo - https://github.com/digitaldrreamer/ckb-transaction-firewall
-PR #5 - https://github.com/digitaldrreamer/ckb-transaction-firewall/pull/5
-PR #6 - https://github.com/digitaldrreamer/ckb-transaction-firewall/pull/6
-CKB script docs - https://docs.nervos.org/docs/script
+## Refs / Sources
+
+- CKB Transaction Firewall repo - https://github.com/digitaldrreamer/ckb-transaction-firewall
+- PR #5 - https://github.com/digitaldrreamer/ckb-transaction-firewall/pull/5
+- PR #6 - https://github.com/digitaldrreamer/ckb-transaction-firewall/pull/6
+- CKB script docs - https://docs.nervos.org/docs/script
