@@ -106,4 +106,4 @@
 - Expanded `week-9/ai-cleaned.md` with richer context: Phase 4 rationale, firewall-lock test story, dedicated `phase4_prepare_tx_files.sh` section, CI and docs depth, review bots, and clearer repository status.
 
 ## 2026-05-12 (week-9 PR link clarity)
-- Clarified in `week-9/raw.md` and `week-9/ai-cleaned.md` that PR numbers refer to `digitaldrreamer/ckb-transaction-firewall`; added markdown links in headings and refs; disambiguated repository status wording.
+- Clarified in `week-9/raw.md` and `week-9/ai-cleaned.md` that PR numbers refer to `digitaldrreamer/ckb-transaction-firewall`; added Markdown links in headings and refs; disambiguated repository status wording.
