@@ -81,3 +81,29 @@
 
 ## 2026-05-07 (week-8 raw humanizer pass)
 - Humanized `week-8/raw.md` to remove remaining AI/report tells (formulaic contrasts, stacked list cadence, and tidy signposting) while preserving technical content and timeline.
+
+## 2026-05-12
+
+- Added `week-9/raw.md` and `week-9/ai-cleaned.md`: post–week-8 Firewall Phase 4 closure (PRs #7–#10), CI and governance evidence gates, firewall-lock integration depth, `0.2.0` and TypeScript SDK publish-ready work, docs/internal layout and testnet deployment guide; curriculum week 9 (DAO + Spore) noted as deferred.
+
+## 2026-05-12 (week-9 raw voice)
+- Rewrote `week-9/raw.md` in first-person devlog voice aligned with weeks 1–8 (curriculum vs shipped work, friction-first narrative, simple Refs block).
+
+## 2026-05-12 (week-9 humanizer pass)
+- Humanized `week-9/raw.md` (cut significance framing, tail negations, and listy cadence; straighter refs; tighter first-person).
+
+## 2026-05-12 (week-9 raw tone)
+- Tightened `week-9/raw.md`: factual PR and script list, removed dramatic or clever phrasing and pause/quiet-day mentions.
+
+## 2026-05-12 (week-9 programme refs removed)
+- Removed Builders programme / curriculum carry-forward and schedule framing from `week-9/raw.md`; dropped DAO and Spore refs there.
+- Updated `week-9/ai-cleaned.md`: removed curriculum vs shipped and carry-forward sections; retitled; optional follow-up is only install checksum hardening; refs trimmed.
+
+## 2026-05-12 (week-9 repo status)
+- Documented current `ckb-transaction-firewall` state in `week-9/raw.md` and `week-9/ai-cleaned.md`: near production-ready; remaining CKB on-chain deployment for target network and npm publish for `sdk/typescript`.
+
+## 2026-05-12 (week-9 ai-cleaned expanded)
+- Expanded `week-9/ai-cleaned.md` with richer context: Phase 4 rationale, firewall-lock test story, dedicated `phase4_prepare_tx_files.sh` section, CI and docs depth, review bots, and clearer repository status.
+
+## 2026-05-12 (week-9 PR link clarity)
+- Clarified in `week-9/raw.md` and `week-9/ai-cleaned.md` that PR numbers refer to `digitaldrreamer/ckb-transaction-firewall`; added markdown links in headings and refs; disambiguated repository status wording.
