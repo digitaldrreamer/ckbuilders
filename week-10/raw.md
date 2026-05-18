@@ -92,6 +92,8 @@ What's next
 - CLI proposal verification and local trust model
 - RPC client timeout and res.ok handling
 - TypeScript/Rust ordering parity fix
+- Remove `add` and `remove` from the CLI before submission -- they were only ever used during development to add test addresses for local testing and don't belong in a published package
+- Add a small `examples/` folder with scripts showing real SDK usage before submission
 - xUDT introduction and RFC reading (delayed from this week)
 - SSRI introduction -- motivation and architecture
 - Beginner app is still outstanding -- token minter or something using Spore
