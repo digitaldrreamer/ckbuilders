@@ -58,18 +58,42 @@ The link checker caught a class of problem I wasn't thinking about: relative `.m
 Ended the week with `@ckb-firewall/sdk@0.2.5` and `@ckb-firewall/cli@0.1.2` on npm after a few rapid patch bumps for logo and link additions.
 
 
+Security review
+
+After the week's shipping was done I asked RobairEth — whose project Nerve placed second in the Claw & Order hackathon — to look over the work. That review hit harder than I expected.
+
+The headline finding was that the governance authorization in `blacklist-registry` is structural, not cryptographic. The contract parses the GOV1 witness, checks signer index range and uniqueness, validates signature field shape, and confirms bytes are non-zero. It never verifies any signature against a signer public key. A witness with distinct signer indexes and correctly shaped 65-byte blobs can satisfy the contract without any real authorization. I'd built and tested the shape of the envelope without checking whether the letters inside were signed.
+
+Related: the `governance-lock` contract only checks for a fixed marker string in args. It does not validate multisig, proposal state, or signer ownership. Any transaction that can satisfy the expected args string can unlock it. As written it is a marker, not an authorization primitive.
+
+The third critical issue was registry cell cloning. The type script allows bootstrap creation with zero registry inputs and one registry output. Because signer validation is only structural, nothing prevents a new cell from being created with the same type identity and arbitrary registry data. The firewall lock accepts any cell dep whose type script matches the configured registry identity, so if the registry identity is not made unique at the cell-instance level — via Type ID or equivalent binding — an attacker can introduce an alternate registry cell that the firewall will trust. That breaks the core guarantee.
+
+The CLI had its own problem along the same axis. The governance execute path reads votes and signatures from local proposal files and serializes whatever is present without independent verification. Proposal JSON can be fabricated or edited locally. The execute path has no way to know.
+
+Below the critical tier, three more things came out of the review. The RPC client in `sdk/cli/src/lib/rpc.ts` had no abort timeout and didn't check `res.ok` before parsing JSON, so stalled connections would hang the CLI indefinitely and non-JSON error responses would produce unhelpful failures. The TypeScript parser and the Rust firewall lock disagreed on duplicate registry entries — Rust rejects equal adjacent identifiers with strict ordering, TypeScript only rejects strict descent, which means a payload the SDK accepts can be rejected on-chain. And the CLI `add` and `remove` commands were building GOV1 witnesses using `placeholderSigners(3)` by default, with no guard against operators accidentally running placeholder-governance update transactions in a real environment.
+
+Some of these were fixed the same day the review notes landed. The RPC timeout and `res.ok` check went in immediately. The TypeScript parser was corrected to reject duplicates with `RegistryNotSorted`, matching the Rust contract. `add` and `remove` now require `CKB_FIREWALL_ALLOW_PLACEHOLDER_GOVERNANCE=1` before they will build a transaction. The `--signer-index` NaN path was closed with an exact `[0-4]` parser.
+
+The critical issues — on-chain signer verification, governance-lock authorization, registry cell uniqueness, and CLI trust model — are open. I'm working through those now before the project goes up for team review. The plan is to either restore real on-chain signer verification in the registry contract or remove the documentation claim that it enforces governance signatures cryptographically, make the registry cell identity unique at the instance level rather than just by governance lock identity, and replace the local-file governance trust model before anything resembling mainnet use.
+
+This is what happens when you ship fast and get a second set of eyes immediately after. I'd built all the machinery, run it end to end, and the tests passed. What RobairEth caught was that the machinery was checking the wrong things — shape instead of correctness, presence instead of authorization. Good time to find out.
+
+
 Curriculum
 
 xUDT and SSRI — the actual week 10 curriculum topics — didn't happen. Neither did RGB++ and iCKB, which are week 11. I'm a couple of weeks behind on the reading track but ahead on the build track in a way that I think is a reasonable trade.
 
-The scheduler would say I should be reading xUDT RFCs right now. The practical situation is: I just shipped a deployed contract, two npm packages, a governance CLI, and a documentation site in three days. The curriculum will keep.
+The scheduler would say I should be reading xUDT RFCs right now. The practical situation is: I just shipped a deployed contract, two npm packages, a governance CLI, and a documentation site in three days, and then immediately went back into the codebase because a security review found real problems. The curriculum will keep.
 
 
 What's next
 
+- Work through the open critical security issues before the project review issue goes up
+- On-chain signer verification in the registry contract
+- Registry cell instance uniqueness via Type ID
+- CLI proposal verification and local trust model replacement
 - xUDT introduction and RFC reading (delayed from this week)
 - SSRI introduction — motivation and architecture
-- Start thinking about the intermediate/advanced project that the curriculum wants by week 11
 - Beginner app is still outstanding — token minter or something using Spore
 
 
@@ -82,4 +106,5 @@ Refs / Sources
 - PR #17 (Starlight docs site) - https://github.com/digitaldrreamer/ckb-transaction-firewall/pull/17
 - @ckb-firewall/sdk on npm - https://www.npmjs.com/package/@ckb-firewall/sdk
 - @ckb-firewall/cli on npm - https://www.npmjs.com/package/@ckb-firewall/cli
+- RobairEth / Nerve (Claw & Order hackathon) - https://github.com/RobairEth
 - CKB script docs - https://docs.nervos.org/docs/script
