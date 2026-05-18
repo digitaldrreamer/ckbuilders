@@ -12,7 +12,7 @@ Testnet deployment
 
 Both contracts went out in a single transaction. `firewall-lock` at index 0, `blacklist-registry` at index 1:
 
-```
+```text
 tx: 0x11b0397cd58dce5c2bd704108ee6e1609128c0d828a3f3360237585e82bb7aed
 block: 0x141be3d
 ```
@@ -67,7 +67,7 @@ After the week's work was done I sent the repo to RobairEth -- whose project Ner
 
 `verify_governance_multisig` only checks signer index uniqueness and that the 65-byte signature field is non-zero. It never verifies a signature against a public key. Three distinct signer indices and any non-zero bytes will pass the function. No cryptographic check happens.
 
-The governance lock has the same gap. It checks for a fixed marker string in args but doesn't validate keys, signatures, or multisig state. Anyone who can construct a valid transaction can satisfy it. Robaire's read: the community governance framing is not yet right.
+The governance lock has the same gap. It checks for a fixed marker string in args but doesn't validate keys, signatures, or multisig state. Anyone who can construct a valid transaction can satisfy it. RobairEth's read: the community governance framing is not yet right.
 
 On the CLI side, the RPC client has no timeout. His node hung when he tested it and he had to close the terminal. He flagged that `res.ok` needs a check, and suggested tests for RPC failure and success paths.
 
