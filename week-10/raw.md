@@ -1,8 +1,11 @@
 Week 10 was supposed to be xUDT and SSRI theory. I spent it shipping.
 
-The week coming out of week 9 had a clear backlog: deploy the contracts to testnet, publish the SDK to npm, and get the repo into a state where an external developer could actually use it. I knocked all three out between May 13 and May 15, plus shipped a CLI that wasn't on the original plan at all.
+The week had a clear backlog coming in: deploy the contracts to testnet, publish the SDK, and get the repo into a state where an external developer could use it. I got through all three between May 13 and May 15, plus shipped a CLI that wasn't in the original plan.
 
-The first thing to deal with was the go/no-go decision. I'd been tracking five gates across the release checklist. By the morning of May 14 they were all green: binary reproducibility verified, governance drill evidence committed, SDK type checks passing, testnet soak done, CI clean. Wrote the decision record explicitly -- GO (2026-05-14, digitaldrreamer) -- and moved into deployment.
+
+Go/no-go
+
+I'd been tracking five release gates. By the morning of May 14 they were all green: binary reproducibility verified, governance drill evidence committed, SDK type checks passing, testnet soak done, CI clean. Wrote the decision record -- GO (2026-05-14, digitaldrreamer) -- and moved into deployment.
 
 
 Testnet deployment
@@ -14,85 +17,81 @@ tx: 0x11b0397cd58dce5c2bd704108ee6e1609128c0d828a3f3360237585e82bb7aed
 block: 0x141be3d
 ```
 
-The TYPE_IDs and `registryScript` stayed the same. That's the point of stable identity -- you can upgrade the cell without changing the on-chain identifier every tool and SDK has already hardcoded. `testnet.registry.example.json` got renamed to `testnet.registry.json` because it wasn't an example anymore.
+TYPE_IDs and `registryScript` are unchanged from the previous deployment. `testnet.registry.example.json` got renamed to `testnet.registry.json`.
 
-The deployment itself was handled by the `scripts/phase4_prepare_tx_files.sh` flow that was hardened in previous weeks. No surprises there. The work that had gone into that script -- the committed-wait logic, the paging fixes, the indexer-lag handling -- paid off. The transaction went through cleanly.
+The deployment used the `scripts/phase4_prepare_tx_files.sh` flow from earlier weeks. The committed-wait logic and indexer-lag handling from that script worked without issues.
 
 
 npm publish
 
-Published `@ckb-firewall/sdk` at 0.2.0. The ESM build, exports map, and type declarations that went in during week 9 made this straightforward. `@arethetypeswrong/cli` had been wired into CI to catch ESM consumer issues, and the profile passed clean.
+Published `@ckb-firewall/sdk@0.2.0`. The ESM build, exports map, and type declarations from week 9 made this straightforward. `@arethetypeswrong/cli` was already in CI and the profile passed clean.
 
-I didn't stop at the SDK. I also rewrote the public-facing READMEs before publishing. The old README was written for someone already inside the project who knew what phase3 meant and what a governance drill was. The new one leads with npm install, shows real testnet registry values in the quick start, and links out to architecture and governance docs for depth. Internal phase3/phase4 artifacts got moved to `docs/internal/` and gitignored -- they served their purpose during development but they're noise to an external reader.
+Before publishing I rewrote the public-facing READMEs. The old README assumed familiarity with the project internals. The new one leads with npm install, shows real testnet registry values in the quick start, and links to the architecture and governance docs for context. Internal phase3/phase4 artifacts moved to `docs/internal/` and got gitignored.
 
 
 @ckb-firewall/cli
 
-The CLI wasn't in the original plan for this week. It came out of realizing that after you publish the SDK, the next thing a developer needs isn't more documentation -- it's a way to inspect what's actually in the registry, propose changes, and move through the governance flow without writing raw JSON.
+The CLI wasn't in the original plan. After publishing the SDK it was clear the next useful thing was a way to inspect the live registry, propose changes, and step through the governance flow without writing raw JSON.
 
-Built it as a standalone npm package using commander, chalk, and inquirer. Eight commands:
+Built as a standalone npm package with commander, chalk, and inquirer. Eight commands:
 
-- `inspect` reads the live testnet registry and prints entries
-- `add` and `remove` are the quick path for testnet and dev use
-- `propose` creates a proposal file under `~/.ckb-firewall/proposals/`
-- `vote` records validator votes with duplicate prevention
-- `proposals` gives a table view with status, tally, and a review countdown
-- `sign` produces the secp256k1 signatures the governance tx needs
-- `execute` builds and submits the governance transaction via ckb-cli
+- `inspect` -- reads the live testnet registry and prints entries
+- `add` and `remove` -- quick path used during development to add test addresses
+- `propose` -- creates a proposal file under `~/.ckb-firewall/proposals/`
+- `vote` -- records validator votes with duplicate prevention
+- `proposals` -- table view with status, tally, and review countdown
+- `sign` -- produces secp256k1 signatures for the governance tx
+- `execute` -- builds and submits the governance transaction via ckb-cli
 
-The `sign` command was the part I had to think hardest about. CKB's secp256k1 convention expects a 65-byte signature in `[r|s|recovery_bit]` layout. Most JavaScript libraries return `[r|s]` by default and make you opt into the recovery bit. `@noble/curves` v2 does it with `format: 'recovered'`. Had to dig into the library docs to find the right call shape.
+The `sign` command needed some care. CKB's secp256k1 convention expects a 65-byte signature in `[r|s|recovery_bit]` layout. `@noble/curves` v2 produces this with `format: 'recovered'`.
 
-Before the CLI PR merged, review flagged a shell injection risk in the `add`, `remove`, and `execute` commands. I'd been building command strings as template literals and passing them to `execSync`. That works fine until someone passes a string with spaces or special characters in a flag value. Replaced those calls with `execFileSync` and explicit argument arrays -- no shell involved, no injection surface.
+Before the CLI PR merged, review flagged a shell injection risk in `add`, `remove`, and `execute`. The commands were building strings with `execSync`. Replaced those with `execFileSync` and explicit argument arrays.
 
 Published `@ckb-firewall/cli@0.1.0` the same day the PR merged.
 
 
 Documentation site
 
-May 15 was the docs site. Switched the repo's `docs/` folder from its previous use as an internal markdown dump to a proper Astro Starlight site. Had to move everything that was in `docs/` before to `notes/` first so they didn't collide.
+May 15 was the docs site. The repo's `docs/` folder was previously used as an internal markdown dump. Moved everything there to `notes/` to free it up, then built an Astro Starlight site in its place.
 
-The site has four sections: Getting Started, Concepts, Reference, and Operations. The Concepts section has the "Why this exists" material -- threat model, why CKB fits the design, how the lock script relates to the SDK. That context belongs in a public site, not buried in an `ABOUT.md` that nobody opens.
+Four sections: Getting Started, Concepts, Reference, Operations. The Concepts section covers the threat model and why the lock script design works the way it does.
 
-The link checker caught a class of problem I wasn't thinking about: relative `.md` file links in Starlight content generate verbatim `href` values in the built HTML, so they 404 at runtime even when the file exists. Fixed those by rewriting to `/concepts/.../` route paths and updating `check_markdown_links.py` to validate against the actual content directory structure.
+The link checker caught an issue: relative `.md` links in Starlight content produce verbatim `href` values in the built HTML, so they 404 at runtime even when the source file exists. Fixed by rewriting to route paths like `/concepts/.../` and updating `check_markdown_links.py` to validate against the content directory structure.
 
-Ended the week with `@ckb-firewall/sdk@0.2.5` and `@ckb-firewall/cli@0.1.2` on npm after a few rapid patch bumps for logo and link additions.
+Ended on `@ckb-firewall/sdk@0.2.5` and `@ckb-firewall/cli@0.1.2` after a few patch bumps for logo and link additions.
 
 
 Security review
 
-After all of that was done I sent the repo link to RobairEth -- whose project Nerve placed second in the Claw & Order hackathon -- and asked him to look it over. He came back about an hour later with a few things.
+After the week's work was done I sent the repo to RobairEth -- whose project Nerve placed second in the Claw & Order hackathon -- and asked him to look it over. He came back with a few things on May 16.
 
-The main one was `verify_governance_multisig`. He pointed out that the function only checks signer index uniqueness and that the 65-byte signature field is non-zero. It never actually verifies a signature against a public key. So you can construct three distinct signer indices and any non-zero bytes, and the function passes. No cryptographic check happens. The governance is structural framing, not actual authorization.
+`verify_governance_multisig` only checks signer index uniqueness and that the 65-byte signature field is non-zero. It never verifies a signature against a public key. Three distinct signer indices and any non-zero bytes will pass the function. No cryptographic check happens.
 
-The governance lock has the same problem from a different angle. It checks for a fixed marker string in args but does nothing with keys, signatures, or multisig state. Anyone who can construct a valid transaction can authorize themselves. Robaire's framing was direct: the community governance as written is not yet right.
+The governance lock has the same gap. It checks for a fixed marker string in args but doesn't validate keys, signatures, or multisig state. Anyone who can construct a valid transaction can satisfy it. Robaire's read: the community governance framing is not yet right.
 
-On the CLI side he got stuck when actually running it. The RPC client has no timeout -- his node just hung and he had to close the terminal. He flagged that `res.ok` needed a check to prevent captive hangs, and suggested writing tests for RPC failure and success paths so the next reviewer has something to run.
+On the CLI side, the RPC client has no timeout. His node hung when he tested it and he had to close the terminal. He flagged that `res.ok` needs a check, and suggested tests for RPC failure and success paths.
 
-He also spotted that the TypeScript and Rust implementations have a logic comparison disparity in the blacklist ordering check. Rust uses strict less-than so equal adjacent identifiers fail. TypeScript uses less-than-or-equal so duplicates pass. A payload the TypeScript SDK accepts can be rejected by the on-chain contract.
+He also caught a logic comparison disparity between the TypeScript and Rust implementations. Rust uses strict less-than on the ordering check, so equal adjacent identifiers fail. TypeScript uses less-than-or-equal, so duplicates pass. A payload the SDK accepts can be rejected on-chain.
 
-After I read through those I did my own diagnostic pass and found a few more things: the registry cell can be bootstrapped with arbitrary data because the structural signer check is the only gate on creation, the CLI execute path serializes whatever signatures are in the local proposal file without verifying them against a known signer set, the placeholder governance guard is not enforced by default on `add` and `remove`, and the `--signer-index` parser can produce NaN which the range check doesn't catch.
+After reading his notes I did my own pass through the code. A few more things came up: the registry cell can be bootstrapped with arbitrary data because structural signer checking is the only gate on creation; the CLI execute path serializes whatever signatures are in the local proposal file without checking them against a known signer set; the placeholder governance guard on `add` and `remove` is not enforced by default; the `--signer-index` parser can produce NaN which the range check doesn't catch.
 
-None of this is fixed yet. These are open. I'm working through them before the project goes up as a formal review issue for the team. The critical path is on-chain signer verification in the registry contract, registry cell instance uniqueness so the firewall can't be pointed at a fabricated alternate registry, and replacing the local-file trust model in the CLI before any of this goes near mainnet.
-
-Shipping fast and getting a second set of eyes immediately is exactly how you want to find this kind of thing. The machinery was checking the wrong properties -- shape instead of cryptographic correctness, presence instead of authorization. Good time to find out.
+None of these are fixed yet. I'm working through them before putting the project up as a formal review issue for the team.
 
 
 Curriculum
 
-xUDT and SSRI -- the actual week 10 curriculum topics -- didn't happen. Neither did RGB++ and iCKB, which are week 11. I'm a couple of weeks behind on the reading track but ahead on the build track in a way that I think is a reasonable trade.
-
-The scheduler would say I should be reading xUDT RFCs right now. The practical situation is: I just shipped a deployed contract, two npm packages, a governance CLI, and a documentation site in three days, then immediately went back into the codebase because a security review found real problems. The curriculum will keep.
+xUDT and SSRI didn't happen this week. RGB++ and iCKB, which are week 11, also didn't happen. I'm behind on the reading track.
 
 
 What's next
 
-- Work through the open security issues before putting the project up for team review
+- Work through the open security issues before team review
 - On-chain signer verification in the registry contract
 - Registry cell instance uniqueness via Type ID
 - CLI proposal verification and local trust model
 - RPC client timeout and res.ok handling
 - TypeScript/Rust ordering parity fix
-- Remove `add` and `remove` from the CLI before submission -- they were only ever used during development to add test addresses for local testing and don't belong in a published package
+- Remove `add` and `remove` from the CLI before submission -- they were only used during development to add test addresses and don't belong in a published package
 - Add a small `examples/` folder with scripts showing real SDK usage before submission
 - xUDT introduction and RFC reading (delayed from this week)
 - SSRI introduction -- motivation and architecture
