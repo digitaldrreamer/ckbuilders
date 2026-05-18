@@ -1,7 +1,5 @@
 # Week 10
 
-Week 10 was supposed to be xUDT and SSRI theory. I spent it shipping.
-
 The week had a clear backlog coming in: deploy the contracts to testnet, publish the SDK, and get the repo into a state where an external developer could use it. That happened between May 13 and May 15. A CLI also shipped — it wasn't in the original plan.
 
 ## Go/no-go
@@ -90,5 +88,3 @@ None of these are fixed yet. I'm working through them before filing a formal rev
 - [PR #17 — Starlight docs site](https://github.com/digitaldrreamer/ckb-transaction-firewall/pull/17)
 - [@ckb-firewall/sdk on npm](https://www.npmjs.com/package/@ckb-firewall/sdk)
 - [@ckb-firewall/cli on npm](https://www.npmjs.com/package/@ckb-firewall/cli)
-- [RobairEth / Nerve — Claw & Order hackathon](https://github.com/RobairEth)
-- [CKB script docs](https://docs.nervos.org/docs/script)
