@@ -78,11 +78,6 @@ After reading his notes I did my own pass through the code. A few more things ca
 None of these are fixed yet. I'm working through them before putting the project up as a formal review issue for the team.
 
 
-Curriculum
-
-xUDT and SSRI didn't happen this week. RGB++ and iCKB, which are week 11, also didn't happen. I'm behind on the reading track.
-
-
 What's next
 
 - Work through the open security issues before team review
@@ -93,8 +88,6 @@ What's next
 - TypeScript/Rust ordering parity fix
 - Remove `add` and `remove` from the CLI before submission -- they were only used during development to add test addresses and don't belong in a published package
 - Add a small `examples/` folder with scripts showing real SDK usage before submission
-- xUDT introduction and RFC reading (delayed from this week)
-- SSRI introduction -- motivation and architecture
 - Beginner app is still outstanding -- token minter or something using Spore
 
 
