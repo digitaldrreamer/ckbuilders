@@ -66,7 +66,7 @@ PR review surfaced real issues. The `error_codes` module had entirely wrong cons
 
 ## Docs audit and preview system (PR #26)
 
-With the protocol changes stabilised, the docs site had accumulated a lot of stale content. PR #26 was a full sweep.
+With the protocol changes stabilized, the docs site had accumulated a lot of stale content. PR #26 was a full sweep.
 
 All “GOV1 v2” references updated to “GOV1 v3” across the architecture, blacklist-registry, and governance pages. The signing preimage description was wrong in two places — it now correctly documents the 5-field 136-byte blake2b preimage. The rust-sdk.md page was a “coming soon” stub; replaced with full v0.3.0 docs covering all public functions. The overview page Rust tab showed a placeholder; now shows a working `check_transaction` snippet. CHANGELOG entries added for TypeScript SDK v0.3.2, CLI v0.2.3, and Rust SDK v0.3.0.
 
