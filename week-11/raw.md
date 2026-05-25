@@ -56,14 +56,39 @@ After that there was no reason to keep v2. Dropped it. All callers were already 
 Wrote 10 unit tests for verify_since_timestamp covering every rejection branch and the passing boundary cases.
 
 
+Rust SDK v0.3.0 (PR #25)
+
+The Rust SDK was at v0.2.0 and had drifted from the TypeScript SDK and the current protocol state. Three structural gaps: single-registry only (matching full type-script equality instead of the 32-byte type_id_value), `now_secs` baked into `check_transaction` via `SystemTime::now()`, and `parse_registry_payload` was private.
+
+Updated to v0.3.0. The flat lib.rs was split into six focused modules: errors, types, registry, builder, firewall, testnet. type_id_value matching now correctly reads bytes 34-66 of the registry type-script args, matching the on-chain resolver. `check_transaction` takes `now_secs: u64` as an explicit parameter -- callers supply the chain's median time or system time, nothing is baked in. `parse_registry_payload` is public.
+
+The builder module is new: `build_firewall_lock_args`, `build_firewall_lock_script`, and `build_firewall_spend_cell_deps` mirror the TypeScript SDK's builder.ts, encoding the v2 FirewallLockArgs byte layout. `preflight_check` and `is_blacklisted` are also now standalone public helpers -- useful when you've already fetched and parsed registry payloads yourself.
+
+Optional serde and testnet feature flags. `encode_registry_payload` and `encode_governance_header` are public so callers can produce test payloads or build tooling without reimplementing the wire format. Only BLKL v2 is accepted; v1 is hard-rejected. 20+ tests.
+
+PR review surfaced real issues. The error_codes module had entirely wrong constants for codes 5-7 and 13-16 -- I'd invented governance codes that don't exist in the contract. The actual mapping (from the frozen v1 contract): InvalidArgsLayout=5, UnsupportedVersion=6, UnsupportedFlags=7, MissingInnerLockCellDep=13, InvalidInnerLockScript=14, InnerLockRejected=15, OutputScriptParseFailed=16. The dep-matching length check was >= 66 instead of == 66; the on-chain resolver requires exact length. The `parse_entries` function was missing the max_possible bounds check before Vec::with_capacity, which the contract itself has to prevent OOM on malicious input. The governance header bounds were checked against data.len() instead of offset + gov_len, allowing a malformed gov_header_len to cause reads into the entry section. `encode_registry_payload` was casting identifier length to u8 without validation, silently truncating anything over 255 bytes. Fixed all of these in a follow-up commit.
+
+
+Docs audit and preview system (PR #26)
+
+With the protocol changes stabilized, the docs site had accumulated a lot of stale content. PR #26 was a full sweep.
+
+All "GOV1 v2" references updated to "GOV1 v3" across the architecture, blacklist-registry, and governance pages. The signing preimage description was wrong in two places -- it now correctly documents the 5-field 136-byte blake2b preimage. The rust-sdk.md page was a "coming soon" stub; replaced with full v0.3.0 docs covering all public functions. The overview page Rust tab showed a placeholder; now shows a working check_transaction snippet. CHANGELOG entries added for TypeScript SDK v0.3.2, CLI v0.2.3, and Rust SDK v0.3.0.
+
+A glossary page was added covering all project-specific terminology: binary formats, contracts, architecture concepts, SDK types, and governance vocabulary. 37 terms.
+
+Then a hover/tap preview system on top of the glossary. Every page now auto-marks the first occurrence of each defined term with a dotted underline. Hovering (desktop) shows a definition popover; tapping (mobile) shows a bottom sheet. The same system was extended to inline code symbols -- hovering over a symbol like check_transaction or FirewallError shows the actual source snippet from the relevant file. File-path references get a file-location panel. Syntax highlighting for both TypeScript and Rust was added via a self-contained tokenizer with no CDN dependency.
+
+
 Status
 
-Every finding from the week-10 review is fixed and documented in SECURITY.md. I still haven't filed the formal review issue for the team -- want to write it up properly before I do.
+Every finding from the week-10 review is fixed and documented in SECURITY.md. The Rust SDK is at v0.3.0 and publishable to crates.io. I still haven't filed the formal review issue for the team -- want to write it up properly before I do.
 
 
 What's next
 
 - File the formal security review issue
+- Publish Rust SDK to crates.io
 - Decide whether add/remove belong in the published CLI
 - examples/ folder -- still outstanding
 - Beginner app -- still outstanding
@@ -76,3 +101,5 @@ Refs / Sources
 - PR #21 (signing preimage binds old_root/new_root) - https://github.com/digitaldrreamer/ckb-transaction-firewall/pull/21
 - PR #23 (CLI security vulnerabilities + quality audit) - https://github.com/digitaldrreamer/ckb-transaction-firewall/pull/23
 - PR #24 (full audit fixes + GOV1 v3) - https://github.com/digitaldrreamer/ckb-transaction-firewall/pull/24
+- PR #25 (Rust SDK v0.3.0) - https://github.com/digitaldrreamer/ckb-transaction-firewall/pull/25
+- PR #26 (docs audit and preview system) - https://github.com/digitaldrreamer/ckb-transaction-firewall/pull/26
