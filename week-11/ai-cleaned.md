@@ -32,7 +32,11 @@ Wrote up every finding with a severity label, then addressed them in a single pa
 
 A code quality audit ran alongside the security pass.
 
-sign and vote were missing `--rpc-url` and `--registry-tx` in index.ts — `opts.rpcUrl` was always undefined and both commands were broken at runtime. Votes needed to freeze once signing started: adding a vote after the first signature changes the vote_digest_hash and invalidates collected signatures. vote.ts wasn't checking the local pubkeys Merkle root against on-chain before recording a vote. The Rust SDK had no BLKL v2 parsing — added GovernanceHeader struct and replaced the O(n) scan with an expiry-aware binary search. Several more through Q13: binary search in check.ts, AbortController timeout in SDK fetch, auto-rejection of proposals with expired review windows, version string corrected.
+The sign and vote commands were missing --rpc-url and --registry-tx in index.ts — opts.rpcUrl was always undefined and both commands were broken at runtime.
+
+Votes needed to freeze once signing started: adding a vote after the first signature changes the vote_digest_hash and invalidates collected signatures. vote.ts wasn't checking the local pubkeys Merkle root against on-chain before recording a vote.
+
+The Rust SDK had no BLKL v2 parsing — added GovernanceHeader struct and replaced the O(n) scan with an expiry-aware binary search. Several more through Q13: binary search in check.ts, trailing slash normalization, AbortController timeout in SDK fetch, auto-rejection of proposals with expired review windows, and version string corrected.
 
 ## GOV1 v3 and on-chain review window enforcement (PR #24)
 
