@@ -49,6 +49,19 @@ Examples got 5 pages: TypeScript SDK, Rust SDK, preflight patterns, multi-regist
 CI had been failing since week 12's restructure. Five links in reference pages were still pointing to `/guides/` and `/operations/` routes that had been deleted. Fixed and pushed.
 
 
+PR #32 work (also June 4)
+
+After the keyless governance and docs work landed, a second branch of work on June 4 addressed docs coverage, version housekeeping, and CLI ergonomics.
+
+`preview.js` gained 20 new CODE_INDEX entries covering the full public SDK surface: `TransactionFirewall`, `HashType`, `ScriptLike`, `OutPointLike`, `RegistryEntry`, `TransactionCellDep`, `FIREWALL_ERROR_CODES`, all four `FirewallSdkError` subclasses, `isFirewallSdkError`, `resolveRegistryDeps`, `firstActiveEntry`, and the Rust SDK builders and helpers (`is_blacklisted`, `preflight_check`, `build_firewall_lock_args/script/spend_cell_deps`, `encode_governance_header`). Four new TERMS entries added: `treasury`, `live cell`, `Merkle proof`, `RegistryEntry`. FILE_PATH_RE extended to include `examples/*` so the Location lines in example docs get GitHub link panels.
+
+`ckb-firewall config` is a new command that reads and writes `~/.ckb-firewall/config.json`. Running it with no flags shows the current config and offers an interactive menu. `--proposer <name>` sets a default proposer name non-interactively. The `propose` command was updated to use the saved name as the prompt default and offers to save the entered name on first use. The GUI's New Proposal form now prefills the Proposer field from the same config value via `TFW_META`. `saveConfig` wraps FS operations in try-catch with a descriptive error; the `propose` command treats a save failure as a non-fatal warning so a permissions issue on the config file cannot block proposal creation.
+
+CLI bumped to 0.5.0. Rust SDK bumped to 0.3.1 (minor registry.rs fix). Hardcoded version literals in `index.ts` and `app.jsx` replaced with runtime reads from `package.json` via `createRequire`, matching the pattern already used in `gui-server.ts`. Rust example `preflight_service` fixed to print "1 entry" vs "entries" correctly.
+
+Gemini review rounds on PR #32 surfaced: non-fatal saveConfig failure in propose (fixed), try-catch in saveConfig (fixed), top-level try-catch in configCommand (fixed), Array.isArray guard in loadConfig (fixed), indentation inside the try block (fixed). All addressed and resolved.
+
+
 Status and what's next
 
 The governance workflow is fully keyless end to end. Proposals anchor through the treasury, the review delay is enforced on chain, and execution doesn't touch a treasury key. The docs are the most complete they've been, covering all four Diátaxis modes.

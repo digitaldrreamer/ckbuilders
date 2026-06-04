@@ -44,6 +44,18 @@ The Diátaxis skeleton from week 12 was filled in across nine commits.
 
 `public/preview.js` got 8 new TERMS entries, 3 new CODE_INDEX entries, and the GovernanceWitness snippet corrected from v3 (141 bytes, `0x03`) to v4 (173 bytes, `0x04`). CI had been failing since week 12's restructure because five reference page links still pointed to deleted `/guides/` and `/operations/` routes — fixed and pushed.
 
+## `ckb-firewall config` and docs polish — [PR #32](https://github.com/digitaldrreamer/ckb-transaction-firewall/pull/32)
+
+A second branch of June 4 work addressed docs coverage, CLI ergonomics, and version housekeeping.
+
+**`ckb-firewall config`** is a new command reading and writing `~/.ckb-firewall/config.json`. Running it with no flags shows the current config and offers an interactive menu to set or clear the default proposer name. `--proposer <name>` sets it non-interactively. The `propose` command uses the saved name as the prompt default and offers to save the entered name on first use. If saving fails (e.g. permissions), it prints a warning and proposal creation continues. The GUI's New Proposal form prefills the Proposer field from the same config value via `TFW_META`.
+
+**preview.js** gained 20 new CODE_INDEX entries covering the full public SDK surface: `TransactionFirewall`, `HashType`, `ScriptLike`, `OutPointLike`, `RegistryEntry`, `TransactionCellDep`, `FIREWALL_ERROR_CODES`, all four `FirewallSdkError` subclasses, `isFirewallSdkError`, `resolveRegistryDeps`, `firstActiveEntry`, and the Rust SDK builders and helpers. Four new TERMS entries: `treasury`, `live cell`, `Merkle proof`, `RegistryEntry`. FILE_PATH_RE extended to include `examples/*` so Location lines in example docs get GitHub link panels on hover.
+
+**Versions**: CLI bumped to 0.5.0, Rust SDK to 0.3.1. Hardcoded version literals in `index.ts` and `app.jsx` replaced with `createRequire` reads from `package.json`.
+
+**Gemini review fixes**: `saveConfig` try-catch with descriptive error, non-fatal warning in `propose`, top-level try-catch in `configCommand`, `Array.isArray` guard in `loadConfig`, indentation fix in `configCommand` try block.
+
 ## What's next
 
 - Testnet deployment of `treasury-lock` and `proposal-anchor` with new Type IDs
@@ -55,4 +67,5 @@ The Diátaxis skeleton from week 12 was filled in across nine commits.
 
 - [CKB Transaction Firewall](https://github.com/digitaldrreamer/ckb-transaction-firewall)
 - [PR #31 — keyless governance lifecycle](https://github.com/digitaldrreamer/ckb-transaction-firewall/pull/31)
+- [PR #32 — preview.js polish, config command, version bumps](https://github.com/digitaldrreamer/ckb-transaction-firewall/pull/32)
 - [CKB since field RFC](https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0017-tx-valid-since/0017-tx-valid-since.md)
