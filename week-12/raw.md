@@ -32,9 +32,9 @@ Governance authority model fix (June 1)
 
 Three commits on June 1 came out of a closer read of the governance authority model.
 
-GOV-004 was a vote authorization gap and NEW-004 was an execute authorization gap. Both got fixed with tighter validation in the relevant CLI commands.
+Two open security findings were closed: one covering a vote authorization gap, one covering an execute authorization gap. Both got fixed with tighter validation in the relevant CLI commands.
 
-The more significant change was in `refactor: remove signer layer artifacts`. The governance authority model had an incorrect assumption: proposal cells were being locked in a way that required the treasury private key to be available at execution time. The treasury is supposed to fund the anchor cell, not authorize the state transition. The governance-lock handles authorization through threshold signatures from the committee. Those two concerns are separate and should stay separate. Correcting the model meant locking proposal anchor cells to governance-lock rather than to anything that touches the treasury key. The same refactor also removed a VM blocker -- certain atomic instructions emitted by the signer layer are not supported by the CKB VM's RISC-V implementation. The GUI got a round of UX and correctness fixes in the same batch.
+The more significant change was removing the signer layer entirely. The governance authority model had an incorrect assumption: proposal cells were being locked in a way that required the treasury private key to be available at execution time. The treasury is supposed to fund the anchor cell, not authorize the state transition. The governance-lock handles authorization through threshold signatures from the committee. Those two concerns are separate and should stay separate. Correcting the model meant locking proposal anchor cells to governance-lock rather than to anything that touches the treasury key. The same refactor also removed a VM blocker -- certain atomic instructions emitted by the signer layer are not supported by the CKB VM's RISC-V implementation. The GUI got a round of UX and correctness fixes in the same batch.
 
 
 Status and what's next
