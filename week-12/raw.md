@@ -10,7 +10,7 @@ ckb-firewall gui (PR #28)
 
 After publishing the CLI, the most common piece of feedback was that the governance flow was hard to follow through terminal commands alone. You'd run `inspect`, copy an address, run `propose`, copy a proposal ID, run `vote` four times, run `sign`, run `execute` -- and at no point did you have a way to see the full state in one place. So I built a browser dashboard.
 
-`ckb-firewall gui` serves a governance dashboard over loopback. The CLI tries port 80 first and writes an `/etc/hosts` alias, so the URL is `http://ckb-firewall.localhost` with no port number. Falls back to `:7979` if port 80 is not available. On Linux, `sudo setcap cap_net_bind_service+eip $(which node)` makes the portless URL work without `sudo` on every launch. GUI source lives in `src/lib/gui/` as JSX components and CSS, assembled into `dist/lib/gui-bundle.html` by `scripts/build-gui.js` at build time. The bundle ships inside the npm tarball.
+`ckb-firewall gui` serves a governance dashboard over loopback on port `:7979` by default. It also attempts to bind a proxy on port 80 and write an `/etc/hosts` alias — if that succeeds the URL upgrades to `http://ckb-firewall.localhost` with no port number; if port 80 is unavailable the high-port URL is used as-is. On Linux, `sudo setcap cap_net_bind_service+eip $(which node)` makes the portless URL work without `sudo` on every launch. GUI source lives in `src/lib/gui/` as JSX components and CSS, assembled into `dist/lib/gui-bundle.html` by `scripts/build-gui.js` at build time. The bundle ships inside the npm tarball.
 
 The dashboard shows live registry entries with status and expiry, treasury pool usage with a donation address, the proposal list with status and vote counts, and inline forms for creation, voting, and execution. The connection status dot in the header reflects the actual socket state rather than a static assumption.
 
@@ -32,9 +32,9 @@ Governance authority model fix (June 1)
 
 Three commits on June 1 came out of a closer read of the governance authority model.
 
-GOV-004 was a vote authorization gap and NEW-004 was an execute authorization gap. Both got fixed with tighter validation in the relevant CLI commands.
+Two open security findings were closed: one covering a vote authorization gap, one covering an execute authorization gap. Both got fixed with tighter validation in the relevant CLI commands.
 
-The more significant change was in `refactor: remove signer layer artifacts`. The governance authority model had an incorrect assumption: proposal cells were being locked in a way that required the treasury private key to be available at execution time. The treasury is supposed to fund the anchor cell, not authorize the state transition. The governance-lock handles authorization through threshold signatures from the committee. Those two concerns are separate and should stay separate. Correcting the model meant locking proposal anchor cells to governance-lock rather than to anything that touches the treasury key. The same refactor also removed a VM blocker -- certain atomic instructions emitted by the signer layer are not supported by the CKB VM's RISC-V implementation. The GUI got a round of UX and correctness fixes in the same batch.
+The more significant change was removing the signer layer entirely. The governance authority model had an incorrect assumption: proposal cells were being locked in a way that required the treasury private key to be available at execution time. The treasury is supposed to fund the anchor cell, not authorize the state transition. The governance-lock handles authorization through threshold signatures from the committee. Those two concerns are separate and should stay separate. Correcting the model meant locking proposal anchor cells to governance-lock rather than to anything that touches the treasury key. The same refactor also removed a VM blocker -- certain atomic instructions emitted by the signer layer are not supported by the CKB VM's RISC-V implementation. The GUI got a round of UX and correctness fixes in the same batch.
 
 
 Status and what's next

@@ -10,7 +10,7 @@ A few deferred maintenance items first. Bumped `@ckb-firewall/cli` to 0.3.1, upd
 
 After publishing the CLI, the most common feedback was that the governance flow was hard to follow through terminal commands alone. You'd run `inspect`, copy an address, run `propose`, copy a proposal ID, run `vote`, run `sign`, run `execute` — and at no point could you see the full state in one place. PR #28 adds a browser dashboard.
 
-`ckb-firewall gui` serves the dashboard over loopback. The CLI tries port 80 first and writes an `/etc/hosts` alias so the URL is `http://ckb-firewall.localhost` with no port number, falling back to `:7979` if port 80 is unavailable. On Linux, `sudo setcap cap_net_bind_service+eip $(which node)` grants the low port without `sudo` on every launch. GUI source is in `src/lib/gui/` as JSX components and CSS, assembled into `dist/lib/gui-bundle.html` by `scripts/build-gui.js` at build time and shipped inside the npm tarball.
+`ckb-firewall gui` serves the dashboard over loopback on port `:7979` by default. It then attempts to bind a proxy on port 80 and write an `/etc/hosts` alias so the URL upgrades to `http://ckb-firewall.localhost` with no port number — if port 80 is unavailable the high-port URL is used as-is. On Linux, `sudo setcap cap_net_bind_service+eip $(which node)` grants the low port without `sudo` on every launch. GUI source is in `src/lib/gui/` as JSX components and CSS, assembled into `dist/lib/gui-bundle.html` by `scripts/build-gui.js` at build time and shipped inside the npm tarball.
 
 The dashboard shows live registry entries with status and expiry, treasury pool usage and donation address, the proposal list with vote counts, and inline forms for creation, voting, and execution. The connection dot in the header reflects the actual socket state.
 
@@ -28,9 +28,9 @@ Follow-up commits after both PRs merged: rewrote the main README quick-start to 
 
 ## Governance authority model fix (June 1)
 
-Three commits on June 1 addressed findings GOV-004 (vote authorization gap) and NEW-004 (execute authorization gap) with tighter validation in the relevant CLI commands.
+Three commits on June 1 addressed two open security findings — a vote authorization gap and an execute authorization gap — with tighter validation in the relevant CLI commands.
 
-The more significant change was `refactor: remove signer layer artifacts`. Proposal cells had been locked in a way that required the treasury private key at execution time. The treasury's role is to fund the anchor cell, not to authorize the state transition — the governance-lock handles authorization through committee threshold signatures. Correcting this meant locking proposal anchor cells to governance-lock rather than involving the treasury key. The same refactor removed a VM blocker: certain atomic instructions emitted by the signer layer are not supported by the CKB VM. GUI got UX and correctness fixes in the same batch.
+The more significant change was removing the signer layer entirely. Proposal cells had been locked in a way that required the treasury private key at execution time. The treasury's role is to fund the anchor cell, not to authorize the state transition — the governance-lock handles authorization through committee threshold signatures. Correcting this meant locking proposal anchor cells to governance-lock rather than involving the treasury key. The same refactor removed a VM blocker: certain atomic instructions emitted by the signer layer are not supported by the CKB VM. GUI got UX and correctness fixes in the same batch.
 
 ## What's next
 
