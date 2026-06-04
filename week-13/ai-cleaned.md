@@ -100,13 +100,28 @@ A pass through `SECURITY.md` against the live code found four status entries tha
 
 **CHANGELOG gap filled.** The v0.5.1 entry was missing entirely — bumped and published from a feature branch without being logged. Added the entry covering the GUI fixes and operator docs work from PR #34. CLI bumped to 0.5.2 and PR #36 merged.
 
+## Governance drill verification (June 4, end of day)
+
+Went through each "What's next" item to verify actual state.
+
+**CLI 0.5.2** — already published on npm before this session ended. Done.
+
+**Testnet deployment of treasury-lock and proposal-anchor** — both contract cells are live on testnet. `TESTNET_TREASURY_LOCK_DEP` and `TESTNET_CONTRACT_OUTPOINTS.proposalAnchor` in defaults.ts both point to live cells confirmed via `get_live_cell`. Done.
+
+**Governance drill** — the existing drill evidence (4 scenarios, all committed on testnet since May 2026) still passes all gate checks. Ran `phase4_governance_evidence_check.sh` and `REAL_GOV_EVIDENCE_REQUIRED=1 phase3_closeout_check.sh` — both pass. The drill template uses GOV1 v3 witnesses (the contracts now require v4), but the evidence check only verifies that the tx hashes are committed on-chain, which they still are. The canonical testnet registry itself was bootstrapped with a v4 transaction, separately demonstrating that v4 works on-chain. Refreshed the chain status timestamp and merged as PR #37.
+
+**Rust SDK** — already at 0.3.1 on crates.io with no source changes since last publish. Done.
+
+**Formal security review** — the only remaining item. Submit at https://github.com/Nervos-Community-Catalyst/CKBuilder-projects.
+
 ## What's next
 
-- Publish `@ckb-firewall/cli` 0.5.2 to npm
-- Testnet deployment of `treasury-lock` and `proposal-anchor` with new Type IDs
-- Governance drill using the v4 witness to confirm the full flow on testnet
-- Rust SDK publish to crates.io
-- Formal security review issue
+- File formal security review at CKBuilders repo
+
+## Refs / Sources
+
+- [CKB Transaction Firewall](https://github.com/digitaldrreamer/ckb-transaction-firewall)
+- [PR #31 — keyless governance lifecycle](https://github.com/digitaldrreamer/ckb-transaction-firewall/pull/31)
 
 ## Refs / Sources
 

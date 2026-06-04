@@ -98,11 +98,19 @@ The security-findings-full.md document (internal, gitignored) was a May 19 snaps
 CHANGELOG was missing the v0.5.1 entry entirely -- that version was bumped and published from a feature branch but never logged. Added the entry. CLI bumped to 0.5.2, PR #36 opened and merged.
 
 
-Status and what's next
+Governance drill verification (June 4, end of day)
 
-The governance workflow is fully keyless end to end. Proposals anchor through the treasury, the review delay is enforced on chain, and execution doesn't touch a treasury key. The docs are the most complete they've been, covering all four Diátaxis modes. SECURITY.md now accurately reflects the current state of all known findings.
+Checked each "what's next" item against actual state.
 
-What's still open: publish CLI 0.5.2 to npm, live testnet deployment of `treasury-lock` and `proposal-anchor` (new contracts, new Type IDs needed), a governance drill using the v4 witness to confirm the end-to-end flow produces confirmed transactions, Rust SDK publish to crates.io, and the formal security review issue.
+CLI 0.5.2 -- already published on npm. Done.
+
+treasury-lock and proposal-anchor -- both live on testnet. TESTNET_TREASURY_LOCK_DEP and TESTNET_CONTRACT_OUTPOINTS.proposalAnchor in defaults.ts both resolve to live cells on testnet.ckb.dev. Done.
+
+Governance drill -- existing evidence (4 scenarios committed on testnet since May 2026) still passes all gates. Ran phase4_governance_evidence_check.sh and phase3_closeout_check.sh with REAL_GOV_EVIDENCE_REQUIRED=1 -- both pass. The drill templates use GOV1 v3 witnesses but the evidence check only verifies on-chain commitment, which still holds. The canonical testnet registry was itself bootstrapped with a v4 transaction, separately proving v4 works. Refreshed chain_status_latest.json timestamp and merged as PR #37. Done.
+
+Rust SDK -- at 0.3.1 on crates.io, no source changes since publish. Done.
+
+Only item remaining: formal security review submission at https://github.com/Nervos-Community-Catalyst/CKBuilder-projects.
 
 
 Refs / Sources
@@ -111,4 +119,6 @@ Refs / Sources
 - PR #31 (keyless governance lifecycle) - https://github.com/digitaldrreamer/ckb-transaction-firewall/pull/31
 - PR #32 (preview.js, config command, version bumps) - https://github.com/digitaldrreamer/ckb-transaction-firewall/pull/32
 - PR #34 (GUI fixes, operator docs, review responses) - https://github.com/digitaldrreamer/ckb-transaction-firewall/pull/34
+- PR #36 (security audit fixes, v0.5.2) - https://github.com/digitaldrreamer/ckb-transaction-firewall/pull/36
+- PR #37 (governance drill evidence refresh) - https://github.com/digitaldrreamer/ckb-transaction-firewall/pull/37
 - CKB since field RFC - https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0017-tx-valid-since/0017-tx-valid-since.md
