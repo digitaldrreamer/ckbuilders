@@ -62,11 +62,30 @@ CLI bumped to 0.5.0. Rust SDK bumped to 0.3.1. The CLI's `--version` output and 
 Gemini review on PR #32 caught: the config write in `propose` should be non-fatal (fixed — it's a warning now), the config write function should throw a readable error not a raw Node error (fixed), the config command should catch unexpected errors and exit cleanly instead of printing a stack trace (fixed), the parsed config JSON should validate field types rather than blind-casting (fixed — `proposerName` is only accepted if it's a string), and a missing indentation level inside the try block (fixed). All five addressed and resolved same day.
 
 
+GUI polish and PR #34 review rounds (June 4, continued)
+
+After the GUI and docs work landed on the branch, a round of automated reviews (Gemini + CodeRabbit) on PR #34 caught several real issues that were fixed in the same session.
+
+The execute handler in gui-server.ts was setting proposal.status = "executed" and saving before returning the TX JSON. A guard at the top of the handler threw "Proposal already executed" if status was already executed, so if the file was lost or the broadcast failed there was no way to re-download. Fixed by removing that guard -- the TX is deterministic so re-running is safe, and if the TX is already confirmed on chain getLiveCell will reject on the spent anchor cell anyway.
+
+SET_DATA in the React reducer was replacing state.meta entirely with the poll payload, only preserving yourPubkey. Keys like reviewWindowHours that are only present at initial page load were wiped on the first 15-second poll. Fixed to spread state.meta first so poll data overlays rather than replaces.
+
+RegistryPage had multiple bare registry.filter and registry.length calls that would crash if registry was null. Consolidated to const reg = registry || [] at the top and used it throughout. Same pattern applied in OverviewPage. meta.yourPubkey access in both OverviewPage and ProposalsPage wasn't using optional chaining -- changed to meta?.yourPubkey everywhere. All pubkey comparisons were case-sensitive; normalized both sides to lowercase. Registry table rows were button elements containing proposal link button elements inside -- nested interactive content is invalid HTML per spec. Changed outer rows to div with role=button, tabIndex, and onKeyDown handler for Enter/Space. Removed button-reset CSS (appearance, border, text-align) that was only there to undo browser button styling.
+
+CHANGELOG had a v0.1.0 entry that removed the sign step and said "no separate multisig signing step" -- but the sign command existed in v0.1.0 and the same section documented it. Corrected to restore the sign step and clarify that the command produces 65-byte recovered secp256k1 signatures that go directly into the execute TX witness, no aggregation step beyond that.
+
+Error codes audit: all codes verified against contract source. firewall-lock (5-17), governance-lock (1-6), blacklist-registry (20-28), proposal-anchor (31-36), spawn-aware-secp256k1 (1-7) -- all complete and correct. Code 26 in blacklist-registry is a gap: when INVALID_TYPE_ID was added as code 27 in May, 26 was skipped. Not documented externally, added a CHANGELOG entry for May 20 noting the code 27 addition and the gap.
+
+Version check: @ckb-firewall/sdk (0.3.4) and ckb-transaction-firewall-sdk Rust (0.3.1) have no source changes since their last publish. @ckb-firewall/cli is at 0.5.2 locally vs 0.5.1 on npm -- needs publish.
+
+CLI 0.5.2 bumped to prepare for publish after this branch merges.
+
+
 Status and what's next
 
 The governance workflow is fully keyless end to end. Proposals anchor through the treasury, the review delay is enforced on chain, and execution doesn't touch a treasury key. The docs are the most complete they've been, covering all four Diátaxis modes.
 
-What's still open: live testnet deployment of `treasury-lock` and `proposal-anchor` (new contracts, new Type IDs needed), a governance drill using the v4 witness to confirm the end-to-end flow produces confirmed transactions, Rust SDK publish to crates.io, and the formal security review issue.
+What's still open: merge and publish CLI 0.5.2, live testnet deployment of `treasury-lock` and `proposal-anchor` (new contracts, new Type IDs needed), a governance drill using the v4 witness to confirm the end-to-end flow produces confirmed transactions, Rust SDK publish to crates.io, and the formal security review issue.
 
 
 Refs / Sources
@@ -74,4 +93,5 @@ Refs / Sources
 - CKB Transaction Firewall repo - https://github.com/digitaldrreamer/ckb-transaction-firewall
 - PR #31 (keyless governance lifecycle) - https://github.com/digitaldrreamer/ckb-transaction-firewall/pull/31
 - PR #32 (preview.js, config command, version bumps) - https://github.com/digitaldrreamer/ckb-transaction-firewall/pull/32
+- PR #34 (GUI fixes, operator docs, review responses) - https://github.com/digitaldrreamer/ckb-transaction-firewall/pull/34
 - CKB since field RFC - https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0017-tx-valid-since/0017-tx-valid-since.md

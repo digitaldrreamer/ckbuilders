@@ -68,8 +68,27 @@ After the docs and tooling work landed, a round of GUI bug-fixes and polish was 
 
 **Operator docs.** The treasury deployment and private registry guides were rewritten. The old `deploy-treasury.mdx` described deploying the treasury-lock binary as a manual standalone step, which contradicted the bootstrap tutorial and left the critical connection unexplained. The new version leads with the connection mechanism — treasury-lock args encode `governance_lock_type_id | proposal_anchor_type_id`, matching the contracts in the registry's v3 governance header, which is how the CLI and GUI auto-discover the treasury without out-of-band config. The private registry guide got dedicated "Connect the CLI", "Connect the GUI", and "Connect the TypeScript SDK" sections and documents the current limitation: no persistent registry config in the config file, so `--registry-tx` must be passed to every command. The operator tutorial index relabelled step 3 ("Deploy and seed the treasury" → "Verify the deployment") to match what the page actually does.
 
+## PR #34 review rounds (June 4, continued)
+
+After the GUI and docs work pushed to the branch, automated reviews from Gemini and CodeRabbit on [PR #34](https://github.com/digitaldrreamer/ckb-transaction-firewall/pull/34) caught several real issues, all addressed in the same session.
+
+**Execute re-download bug.** `handleExecute` in `gui-server.ts` was setting `proposal.status = "executed"` immediately after building the TX JSON, before returning it to the browser. A guard at the top of the handler blocked any future call with "Proposal already executed." If the file was lost or the broadcast failed, there was no path to re-download. Fixed by removing the guard — the TX is deterministic so re-running is always safe, and if the TX was already confirmed on-chain `getLiveCell` rejects on the spent anchor cell anyway.
+
+**Meta keys lost on poll.** The `SET_DATA` reducer was replacing `state.meta` entirely with the poll response payload, preserving only `yourPubkey`. Keys like `reviewWindowHours` that are only present at initial page load were silently cleared on the first 15-second poll. Fixed to spread `state.meta` first so poll data overlays rather than replaces.
+
+**Registry null crashes.** `RegistryPage` had multiple bare `registry.filter` and `registry.length` calls that would throw if registry arrived as null before the first successful poll. Consolidated to `const reg = registry || []` at the top of the component, used throughout. `meta.yourPubkey` access across `OverviewPage` and `ProposalsPage` was not using optional chaining — changed to `meta?.yourPubkey` everywhere. All pubkey equality checks were case-sensitive; normalised both sides to lowercase once per component.
+
+**Nested button HTML violation.** Registry table rows were `<button>` elements containing proposal link `<button>` elements inside cells — nested interactive content is invalid per the HTML5 spec and causes broken event propagation and accessibility issues. Changed the outer row to `<div role="button" tabIndex={0}>` with an `onKeyDown` handler for Enter/Space. Removed the button-reset CSS (`appearance`, `border`, `text-align`) that was only there to undo browser button styling on the now-removed `<button>` element.
+
+**CHANGELOG terminology.** A v0.1.0 entry said "no separate multisig signing step" but the same section documented a `sign` command. v0.1.0 did have an explicit sign step. Corrected to restore the step and clarify that the command produces 65-byte recovered secp256k1 signatures that go directly into the execute TX witness — no aggregation step beyond that.
+
+**Error codes audit.** All codes verified against contract source: firewall-lock (5–17), governance-lock (1–6), blacklist-registry (20–28), proposal-anchor (31–36), spawn-aware-secp256k1 (1–7) — complete and correct. Code 26 in blacklist-registry is a gap: when `INVALID_TYPE_ID` was assigned code 27 in May, 26 was skipped. A CHANGELOG entry was added for 2026-05-20 to record when code 27 was introduced and that it replaced a misuse of code 20 for type ID mismatches.
+
+**Version audit.** `@ckb-firewall/sdk` (0.3.4) and the Rust crate (0.3.1) have no source changes since their last publish — no bump needed. `@ckb-firewall/cli` is at 0.5.2 locally vs 0.5.1 on npm and needs publishing after the branch merges.
+
 ## What's next
 
+- Merge PR #34 and publish `@ckb-firewall/cli` 0.5.2
 - Testnet deployment of `treasury-lock` and `proposal-anchor` with new Type IDs
 - Governance drill using the v4 witness to confirm the full flow on testnet
 - Rust SDK publish to crates.io
@@ -80,5 +99,5 @@ After the docs and tooling work landed, a round of GUI bug-fixes and polish was 
 - [CKB Transaction Firewall](https://github.com/digitaldrreamer/ckb-transaction-firewall)
 - [PR #31 — keyless governance lifecycle](https://github.com/digitaldrreamer/ckb-transaction-firewall/pull/31)
 - [PR #32 — preview.js polish, config command, version bumps](https://github.com/digitaldrreamer/ckb-transaction-firewall/pull/32)
-- [Branch: gui-registry-fixes-and-operator-docs](https://github.com/digitaldrreamer/ckb-transaction-firewall/tree/feat/gui-registry-fixes-and-operator-docs)
+- [PR #34 — GUI fixes, operator docs, review responses](https://github.com/digitaldrreamer/ckb-transaction-firewall/pull/34)
 - [CKB since field RFC](https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0017-tx-valid-since/0017-tx-valid-since.md)
