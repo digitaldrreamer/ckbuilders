@@ -56,6 +56,18 @@ A second branch of June 4 work addressed docs coverage, CLI ergonomics, and vers
 
 **Gemini review fixes**: `saveConfig` try-catch with descriptive error, non-fatal warning in `propose`, top-level try-catch in `configCommand`, `Array.isArray` guard in `loadConfig`, indentation fix in `configCommand` try block.
 
+## Governance GUI improvements (June 4 follow-up)
+
+After the docs and tooling work landed, a round of GUI bug-fixes and polish was done on the governance console.
+
+**Execute flow fix.** The execute form was dispatching `UPDATE_PROPOSAL` instead of `EXECUTE` to the React reducer. The `EXECUTE` case is the one that also updates `state.registry` optimistically — so the registry tab stayed empty even after a proposal was successfully executed. The server-side handler also had a matching bug: it was saving the proposal to disk before setting `status = "executed"`, so the next 15-second `/api/data` poll overwrote the optimistic update and the proposal reverted to "approved". Both halves fixed.
+
+**Registry display.** The registry table rows are `<button>` elements without `width: 100%`, so their grid columns weren't aligning with the header. Fixed in CSS. The connection dot now shows an amber "Registry error" state when the local GUI server is reachable (HTTP 200) but the RPC fetch to the testnet node fails — previously it showed green "Connected" in both cases, making it impossible to distinguish a testnet connectivity problem from normal operation.
+
+**Proposal cards and pages.** The vote dot count was hardcoded to 3; it now reads the threshold from `meta`. Compact cards show a review countdown for active proposals. The Proposals tab was missing "Approved" and "Ready to execute" filter tabs, making proposals in those states unreachable through the UI. Added. The registry page now shows an error banner when `meta.registryError` is set, and the empty-state copy hints at hidden expired entries when the "Show expired" checkbox is off. Several null-pubkey guards were added so anonymous sessions (no `yourPubkey` in meta) degrade gracefully instead of showing incorrect counts.
+
+**Operator docs.** The treasury deployment and private registry guides were rewritten. The old `deploy-treasury.mdx` described deploying the treasury-lock binary as a manual standalone step, which contradicted the bootstrap tutorial and left the critical connection unexplained. The new version leads with the connection mechanism — treasury-lock args encode `governance_lock_type_id | proposal_anchor_type_id`, matching the contracts in the registry's v3 governance header, which is how the CLI and GUI auto-discover the treasury without out-of-band config. The private registry guide got dedicated "Connect the CLI", "Connect the GUI", and "Connect the TypeScript SDK" sections and documents the current limitation: no persistent registry config in the config file, so `--registry-tx` must be passed to every command. The operator tutorial index relabelled step 3 ("Deploy and seed the treasury" → "Verify the deployment") to match what the page actually does.
+
 ## What's next
 
 - Testnet deployment of `treasury-lock` and `proposal-anchor` with new Type IDs
@@ -68,4 +80,5 @@ A second branch of June 4 work addressed docs coverage, CLI ergonomics, and vers
 - [CKB Transaction Firewall](https://github.com/digitaldrreamer/ckb-transaction-firewall)
 - [PR #31 — keyless governance lifecycle](https://github.com/digitaldrreamer/ckb-transaction-firewall/pull/31)
 - [PR #32 — preview.js polish, config command, version bumps](https://github.com/digitaldrreamer/ckb-transaction-firewall/pull/32)
+- [Branch: gui-registry-fixes-and-operator-docs](https://github.com/digitaldrreamer/ckb-transaction-firewall/tree/feat/gui-registry-fixes-and-operator-docs)
 - [CKB since field RFC](https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0017-tx-valid-since/0017-tx-valid-since.md)
