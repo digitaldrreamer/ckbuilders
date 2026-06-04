@@ -53,13 +53,13 @@ PR #32 work (also June 4)
 
 After the keyless governance and docs work landed, a second branch of work on June 4 addressed docs coverage, version housekeeping, and CLI ergonomics.
 
-`preview.js` gained 20 new CODE_INDEX entries covering the full public SDK surface: `TransactionFirewall`, `HashType`, `ScriptLike`, `OutPointLike`, `RegistryEntry`, `TransactionCellDep`, `FIREWALL_ERROR_CODES`, all four `FirewallSdkError` subclasses, `isFirewallSdkError`, `resolveRegistryDeps`, `firstActiveEntry`, and the Rust SDK builders and helpers (`is_blacklisted`, `preflight_check`, `build_firewall_lock_args/script/spend_cell_deps`, `encode_governance_header`). Four new TERMS entries added: `treasury`, `live cell`, `Merkle proof`, `RegistryEntry`. FILE_PATH_RE extended to include `examples/*` so the Location lines in example docs get GitHub link panels.
+The docs preview system (`public/preview.js`) gained 20 new code-hover entries covering the full public SDK surface — every major TypeScript class, interface, error type, and Rust function now shows a source snippet when hovered in the docs. Four new glossary definitions added: treasury, live cell, Merkle proof, RegistryEntry. The file-path hover pattern was extended to also recognise paths under `examples/`, so the location lines on example doc pages link through to GitHub.
 
-`ckb-firewall config` is a new command that reads and writes `~/.ckb-firewall/config.json`. Running it with no flags shows the current config and offers an interactive menu. `--proposer <name>` sets a default proposer name non-interactively. The `propose` command was updated to use the saved name as the prompt default and offers to save the entered name on first use. The GUI's New Proposal form now prefills the Proposer field from the same config value via `TFW_META`. `saveConfig` wraps FS operations in try-catch with a descriptive error; the `propose` command treats a save failure as a non-fatal warning so a permissions issue on the config file cannot block proposal creation.
+`ckb-firewall config` is a new command. It stores a default proposer name in `~/.ckb-firewall/config.json` — the same directory proposals are saved to. `ckb-firewall config --proposer alice` sets it in one command. Without the flag, the command shows the current value and offers an interactive menu to set or clear it. Once a name is saved, `ckb-firewall propose` uses it as the default and only asks to confirm; the GUI's New Proposal form prefills from it as well. If writing the config file fails (e.g. a permissions issue), the `propose` command prints a warning and continues — the config is a convenience, not a gate.
 
-CLI bumped to 0.5.0. Rust SDK bumped to 0.3.1 (minor registry.rs fix). Hardcoded version literals in `index.ts` and `app.jsx` replaced with runtime reads from `package.json` via `createRequire`, matching the pattern already used in `gui-server.ts`. Rust example `preflight_service` fixed to print "1 entry" vs "entries" correctly.
+CLI bumped to 0.5.0. Rust SDK bumped to 0.3.1. The CLI's `--version` output and the version label in the GUI header both now read from `package.json` at runtime instead of hardcoded strings, so they stay in sync automatically. The Rust `preflight_service` example was fixed to print "1 entry" correctly instead of "1 entries".
 
-Gemini review rounds on PR #32 surfaced: non-fatal saveConfig failure in propose (fixed), try-catch in saveConfig (fixed), top-level try-catch in configCommand (fixed), Array.isArray guard in loadConfig (fixed), indentation inside the try block (fixed). All addressed and resolved.
+Gemini review on PR #32 caught: the config write in `propose` should be non-fatal (fixed — it's a warning now), the config write function should throw a readable error not a raw Node error (fixed), the config command should catch unexpected errors and exit cleanly instead of printing a stack trace (fixed), the parsed config JSON should validate field types rather than blind-casting (fixed — `proposerName` is only accepted if it's a string), and a missing indentation level inside the try block (fixed). All five addressed and resolved same day.
 
 
 Status and what's next
@@ -73,4 +73,5 @@ Refs / Sources
 
 - CKB Transaction Firewall repo - https://github.com/digitaldrreamer/ckb-transaction-firewall
 - PR #31 (keyless governance lifecycle) - https://github.com/digitaldrreamer/ckb-transaction-firewall/pull/31
+- PR #32 (preview.js, config command, version bumps) - https://github.com/digitaldrreamer/ckb-transaction-firewall/pull/32
 - CKB since field RFC - https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0017-tx-valid-since/0017-tx-valid-since.md
