@@ -28,9 +28,9 @@ Follow-up commits after both PRs merged: rewrote the main README quick-start to 
 
 ## Governance authority model fix (June 1)
 
-Three commits on June 1 addressed findings GOV-004 (vote authorization gap) and NEW-004 (execute authorization gap) with tighter validation in the relevant CLI commands.
+Three commits on June 1 addressed two open security findings — a vote authorization gap and an execute authorization gap — with tighter validation in the relevant CLI commands.
 
-The more significant change was `refactor: remove signer layer artifacts`. Proposal cells had been locked in a way that required the treasury private key at execution time. The treasury's role is to fund the anchor cell, not to authorize the state transition — the governance-lock handles authorization through committee threshold signatures. Correcting this meant locking proposal anchor cells to governance-lock rather than involving the treasury key. The same refactor removed a VM blocker: certain atomic instructions emitted by the signer layer are not supported by the CKB VM. GUI got UX and correctness fixes in the same batch.
+The more significant change was removing the signer layer entirely. Proposal cells had been locked in a way that required the treasury private key at execution time. The treasury's role is to fund the anchor cell, not to authorize the state transition — the governance-lock handles authorization through committee threshold signatures. Correcting this meant locking proposal anchor cells to governance-lock rather than involving the treasury key. The same refactor removed a VM blocker: certain atomic instructions emitted by the signer layer are not supported by the CKB VM. GUI got UX and correctness fixes in the same batch.
 
 ## What's next
 
