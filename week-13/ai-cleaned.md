@@ -86,9 +86,23 @@ After the GUI and docs work pushed to the branch, automated reviews from Gemini 
 
 **Version audit.** `@ckb-firewall/sdk` (0.3.4) and the Rust crate (0.3.1) have no source changes since their last publish — no bump needed. `@ckb-firewall/cli` is at 0.5.2 locally vs 0.5.1 on npm and needs publishing after the branch merges.
 
+## Security audit and [PR #36](https://github.com/digitaldrreamer/ckb-transaction-firewall/pull/36) (June 4, continued)
+
+A pass through `SECURITY.md` against the live code found four status entries that were wrong.
+
+**M1 — Fixed (was incorrectly marked Fixed).** `VOTE_THRESHOLD = 3` was hardcoded in `proposals.ts` and `isVoteApproved` used it directly. The on-chain threshold is read from the governance header for GUI display but never used in the actual approval check. For the canonical testnet registry (threshold 3) this is invisible; a private registry operator with a different threshold would see the CLI report "vote passed" before an on-chain rejection. Fixed: `isVoteApproved` now accepts an optional `threshold` parameter (default: `VOTE_THRESHOLD`). `executeCommand` does a fast pre-check with the default, then re-checks with `state.governanceHeader.threshold` after loading registry state.
+
+**M2 and L3 — Removed (were marked Fixed).** Both findings were in `sign.ts`, which was deleted in v0.4.0. Statuses corrected to Removed.
+
+**L6 — Fixed (was incorrectly marked Fixed).** `header_deps: []` in `execute.ts`, `anchor.ts`, and `reclaim.ts` had no explanatory comment. Added: the `since` MTP delay is enforced by CKB consensus so no scripts call `load_header()` and `header_deps` is always empty.
+
+**Internal notes updated.** `notes/governance.md` and `notes/architecture.md` still described the old multisig signer model and GOV1 v2 witness (133 bytes). Updated for keyless governance: removed the Multisig Signer role, added the anchor step to the lifecycle, replaced the `sign` command references, updated the witness description to GOV1 v4 (173 bytes).
+
+**CHANGELOG gap filled.** The v0.5.1 entry was missing entirely — bumped and published from a feature branch without being logged. Added the entry covering the GUI fixes and operator docs work from PR #34. CLI bumped to 0.5.2 and PR #36 merged.
+
 ## What's next
 
-- Merge PR #34 and publish `@ckb-firewall/cli` 0.5.2
+- Publish `@ckb-firewall/cli` 0.5.2 to npm
 - Testnet deployment of `treasury-lock` and `proposal-anchor` with new Type IDs
 - Governance drill using the v4 witness to confirm the full flow on testnet
 - Rust SDK publish to crates.io

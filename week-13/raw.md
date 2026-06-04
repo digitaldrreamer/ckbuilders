@@ -81,11 +81,28 @@ Version check: @ckb-firewall/sdk (0.3.4) and ckb-transaction-firewall-sdk Rust (
 CLI 0.5.2 bumped to prepare for publish after this branch merges.
 
 
+Security audit and PR #36 (June 4, continued)
+
+Went through SECURITY.md and verified every item against the current code. Found four status entries that were wrong.
+
+M1 was marked Fixed but wasn't. VOTE_THRESHOLD = 3 is hardcoded in proposals.ts and isVoteApproved uses it directly. The on-chain threshold is read from the governance header for display purposes in the GUI but never used in the actual vote approval check. For the canonical testnet registry (threshold 3) it's invisible, but a private registry operator with a different threshold would see the CLI say "vote passed" when it hasn't. Fixed: isVoteApproved now accepts an optional threshold parameter (defaults to VOTE_THRESHOLD). executeCommand does a fast pre-check with the default, then re-checks with state.governanceHeader.threshold after loading the registry state.
+
+M2 and L3 were both marked Fixed. Both were about sign.ts -- M2 was a misleading comment in placeholderSigners, L3 was missing validation on registryIndex. sign.ts was deleted in v0.4.0. Neither finding is relevant any more. Status corrected to Removed.
+
+L6 was marked Fixed but wasn't. header_deps: [] appears in execute.ts, anchor.ts, and reclaim.ts with no comment explaining why it's always empty. The fix: since the MTP delay is enforced by CKB consensus (the miner checks the since field directly), no scripts call load_header() and header_deps doesn't need any entries. Added a one-line comment to all three files.
+
+Also went through notes/governance.md and notes/architecture.md, which still described the old multisig signer model and GOV1 v2 (133 bytes). Updated both for keyless governance: removed the Multisig Signer role, updated the lifecycle to include the anchor step, replaced the sign command with the current flow, and updated the witness description to GOV1 v4 (173 bytes).
+
+The security-findings-full.md document (internal, gitignored) was a May 19 snapshot with everything marked Open. Updated all statuses to reflect what's been fixed across phases 1-4.
+
+CHANGELOG was missing the v0.5.1 entry entirely -- that version was bumped and published from a feature branch but never logged. Added the entry. CLI bumped to 0.5.2, PR #36 opened and merged.
+
+
 Status and what's next
 
-The governance workflow is fully keyless end to end. Proposals anchor through the treasury, the review delay is enforced on chain, and execution doesn't touch a treasury key. The docs are the most complete they've been, covering all four Diátaxis modes.
+The governance workflow is fully keyless end to end. Proposals anchor through the treasury, the review delay is enforced on chain, and execution doesn't touch a treasury key. The docs are the most complete they've been, covering all four Diátaxis modes. SECURITY.md now accurately reflects the current state of all known findings.
 
-What's still open: merge and publish CLI 0.5.2, live testnet deployment of `treasury-lock` and `proposal-anchor` (new contracts, new Type IDs needed), a governance drill using the v4 witness to confirm the end-to-end flow produces confirmed transactions, Rust SDK publish to crates.io, and the formal security review issue.
+What's still open: publish CLI 0.5.2 to npm, live testnet deployment of `treasury-lock` and `proposal-anchor` (new contracts, new Type IDs needed), a governance drill using the v4 witness to confirm the end-to-end flow produces confirmed transactions, Rust SDK publish to crates.io, and the formal security review issue.
 
 
 Refs / Sources
