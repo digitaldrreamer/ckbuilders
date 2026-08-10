@@ -25,9 +25,7 @@ Dang Ty did. He tested locally against synthetic CKB transactions, confirmed the
 
 Both were right, and both recommendations were exactly the fix. Synthetic transactions found them because synthetic transactions can produce the awkward cases the real archives happen not to contain — which is the point of testing that way.
 
-Everything below is [PR #1](https://github.com/digitaldrreamer/fiber-atlas/pull/1), merged August 9.
-
-## A spent cell is not a stuck cell
+## A spent cell is not a stuck cell (August 9)
 
 `/faultline/unresolved` and `/faultline/timing` selected on `spend_kind IS NULL`. That predicate is true of two different things: a cell nobody has spent, and a cell that **was** spent by a transaction whose witness could not be read. Only the first is unresolved. The second was appearing under a heading that reads "Funds in them have not moved", when the funds had moved.
 
@@ -37,7 +35,7 @@ Neither archive currently holds such a cell, so no published figure changed. The
 
 This is also where the test setup went in: `npm test`, and `test/` brought under typecheck.
 
-## Event identity
+## Event identity (August 9)
 
 The second issue was worse than reported, in both directions.
 
@@ -53,7 +51,7 @@ That last part matters more than it sounds. Migration runs in the `Store` constr
 
 `reconcileAttribution()` lost its `UPDATE OR IGNORE`, which only ever existed to survive colliding with duplicates of the row it was attributing — and which silently left those duplicates unattributed forever.
 
-## Replay was wiping gossip
+## Replay was wiping gossip (August 9)
 
 Found while writing tests for the above, not reported. `resetDerived()` deleted the `channel` table outright, but that table is not purely derived. Its L1 columns come from the archive and replay rebuilds them; its gossip columns come from a live Fiber node and exist nowhere else.
 
@@ -61,7 +59,7 @@ So an offline replay — the thing advertised as costing nothing, the whole reas
 
 The L1 half is now cleared in place, the gossip half is left alone, and rows gossip never touched are removed so replay recreates them. `bin/replay.ts` reports the retained count, because that is the number this used to destroy without saying anything.
 
-## One bad row should not brick the archive
+## One bad row should not brick the archive (August 9)
 
 The rebuild above read every legacy row with a bare `json_extract` and copied it into a table carrying `CHECK (commitment_outpoint IS NOT NULL OR channel_outpoint IS NOT NULL)`. Two ways that ends badly, and they end the same way, because of the constructor problem:
 
@@ -72,15 +70,11 @@ Detail is now read through `json_valid()`, so an unparseable payload becomes a N
 
 It is unreachable from the current writers — `processFundingRows` always supplies a `channel_outpoint`, `processCommitmentRows` always supplies a `commitment_outpoint` — so this is for rows left by an older version or edited by hand. Both archives migrate with zero rows quarantined and identical output: testnet 93,321 events and 267 node-attributed, mainnet 220.
 
-## The shape of the PR
+## PR #1 (merged August 9)
 
 909 insertions, 13 deletions, 9 files. Three test files covering event identity, the migration itself, reset behaviour, replay preservation and unresolved-cell reporting. BattleTest ran a security review and found nothing. CodeRabbit hit its free OSS review limit partway through, so its pass covered the last commit only.
 
 The deletion count is the honest summary of the week. Almost none of this was rewriting logic. It was making the database say what the code already believed.
-
-## veiled-ckb veto window (August 2)
-
-Missed out of week 15. The veto window in the [veiled-ckb](https://github.com/digitaldrreamer/veiled-ckb) spec has to give the current secret holder enough real time to notice a rotation and object, so it is a duration rather than a count of blocks. It is now enforced on median time past, which measures elapsed time, lags wall clock in the safe direction, and is deterministic at consensus; a height difference only converts to hours under an assumed block rate. This brings it in line with [ckb-transaction-firewall](https://github.com/digitaldrreamer/ckb-transaction-firewall), which enforces its governance review delay on the same metric in `proposal-anchor` and `governance-lock`.
 
 ## Status
 
@@ -103,9 +97,7 @@ Fiber Atlas is deployed on both networks with the reported issues fixed and a te
 
 - [Fiber Atlas PR #1 — event identity and unresolved cells](https://github.com/digitaldrreamer/fiber-atlas/pull/1)
 - [Fiber Atlas repo](https://github.com/digitaldrreamer/fiber-atlas)
+- [Fiber Atlas, live](https://fiber-atlas.drreamer.digital/#/mainnet/overview)
 - [Gone in 60ms — Fiber infrastructure hackathon roundup](https://talk.nervos.org/t/gone-in-60ms-fiber-infrastructure-hackathon-roundup/10561)
 - [FiberScope, by duongja](https://github.com/duongja/FiberScope)
-- [Fiber Atlas, live](https://fiber-atlas.drreamer.digital/#/mainnet/overview)
 - [Faultline spec (F+04 quarantine)](https://github.com/digitaldrreamer/fiber-atlas/blob/main/specs/SPEC-FAULTLINE.md)
-- [veiled-ckb](https://github.com/digitaldrreamer/veiled-ckb)
-- [ckb-transaction-firewall](https://github.com/digitaldrreamer/ckb-transaction-firewall)

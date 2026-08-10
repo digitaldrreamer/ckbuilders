@@ -3,9 +3,7 @@ Covers August 3 to August 10. Week 15 ended with Fiber Atlas deployed on both ne
 
 Neon's review (early August)
 
-Two notes, both short. Look at the Fiber infrastructure hackathon roundup to see what other people did on the same topic, for ideas and improvements. And the UI could do with improvement for readability.
-
-https://talk.nervos.org/t/gone-in-60ms-fiber-infrastructure-hackathon-roundup/10561
+Two notes, both short. Look at the Fiber infrastructure hackathon roundup (https://talk.nervos.org/t/gone-in-60ms-fiber-infrastructure-hackathon-roundup/10561) to see what other people did on the same topic, for ideas and improvements. And the UI could do with improvement for readability.
 
 The roundup turned up FiberScope by duongja, which overlaps directly with the Atlas half. Both ingest the public Fiber graph, index nodes and channels, enrich channel funding outpoints with CKB data, and serve an API and a web explorer. The divergence is in what gets built on top. FiberScope goes toward route readiness, liquidity recommendations and payment diagnostics. Fiber Atlas runs on mainnet as well as testnet, and goes toward Faultline: the full historical record of channel closures and reliability.
 
@@ -77,11 +75,6 @@ PR #1 (merged August 9)
 The deletion count is the honest summary of the week. Almost none of this was rewriting logic. It was making the database say what the code already believed.
 
 
-veiled-ckb veto window (August 2)
-
-Missed out of week 15. The veto window in the veiled spec has to give the current secret holder enough real time to notice a rotation and object, so it is a duration rather than a count of blocks. It is now enforced on median time past, which measures elapsed time, lags wall clock in the safe direction, and is deterministic at consensus. A height difference only converts to hours under an assumed block rate. Brings it in line with ckb-transaction-firewall, which enforces its governance review delay on the same metric in proposal-anchor and governance-lock.
-
-
 Status
 
 Fiber Atlas is deployed on both networks with the reported issues fixed and a test suite behind them. Community review produced two real defects on the first outside test, and chasing them produced a third. Neon's review is in and neither of its two points is answered yet: the UI readability work and the FiberScope conversation are both outstanding. License still undecided before a first release.
@@ -101,12 +94,11 @@ What's next
 - The Nervos Talk thread I owe Neon, now four weeks running
 
 
-Refs
+Refs / Sources
 
-- https://github.com/digitaldrreamer/fiber-atlas/pull/1
-- https://github.com/digitaldrreamer/fiber-atlas
-- https://talk.nervos.org/t/gone-in-60ms-fiber-infrastructure-hackathon-roundup/10561
-- https://github.com/duongja/FiberScope
-- https://fiber-atlas.drreamer.digital/#/mainnet/overview
-- https://github.com/digitaldrreamer/veiled-ckb
-- https://github.com/digitaldrreamer/ckb-transaction-firewall
+- Fiber Atlas PR #1 (event identity and unresolved cells) - https://github.com/digitaldrreamer/fiber-atlas/pull/1
+- Fiber Atlas repo - https://github.com/digitaldrreamer/fiber-atlas
+- Fiber Atlas, live - https://fiber-atlas.drreamer.digital/#/mainnet/overview
+- Gone in 60ms, Fiber infrastructure hackathon roundup - https://talk.nervos.org/t/gone-in-60ms-fiber-infrastructure-hackathon-roundup/10561
+- FiberScope, by duongja - https://github.com/duongja/FiberScope
+- Faultline spec (F+04 quarantine) - https://github.com/digitaldrreamer/fiber-atlas/blob/main/specs/SPEC-FAULTLINE.md
